@@ -25,23 +25,46 @@ let gameBoard = (function(){
     btnHandle,
   }
 })()
-function createUser(name){
-  let score = 0
-  return function(){
-    score++
-    display.textContent = `${name} has ${score} score!`
-    if(score == 5){
-      newGame()
-      display.textContent = `${name} won!`
+// function createUser(name){
+//   let score = 0
+//   return function(){
+//     score++
+//     display.textContent = `${name} has ${score} score!`
+//     if(score == 5){
+//       newGame()
+//       display.textContent = `${name} won!`
+//     }
+//     return score
+//   }
+// }
+class Player {
+  constructor(_name) {
+    this.name = _name 
+    this.score = 0
+  }
+
+  checkScore() {
+    if(this.score == 5){
+      display.textContent = `${this.name} won!`
+      gameOver()
+    game = false
     }
-    return score
+  }
+
+  winTurn(){
+    this.score++ 
+    display.textContent = `${this.name} has ${this.score} score!`
+    this.checkScore()
+    gameOver()
+  }
+
+  showInfo() {
+    return this.name
   }
 }
-
 let player1;
 let  player2;
 let game = false
-
 
 let currentPlayer;
 function switchUser(button){
@@ -56,8 +79,8 @@ function switchUser(button){
 function newGame(){
   let name1 = prompt('Give player1 name')
   let name2 = prompt('Give player2 name')
-  player1 = createUser(name1)
-  player2 = createUser(name2)
+  player1 = new Player(name1)
+  player2 = new Player(name2)
 }
 function gameOver(){
   arr = ['', '', '', '', '', '', '', '', '']
@@ -84,11 +107,10 @@ function checkWinner(){
     const [a, b, c] = cond;
     if (arr[a] && arr[a] === arr[b] && arr[a] === arr[c]){
       if(arr[a] == 'X'){
-        player1()
+        player1.winTurn()
       } else if(arr[a] == 'O'){
-        player2()
+        player2.winTurn()
       }
-      const timeOut = setTimeout(gameOver(), 7000)      
       
       return arr[a]
     }
@@ -96,7 +118,7 @@ function checkWinner(){
   if (!arr.includes('')) {
     console.log('draw')
     display.textContent = 'Draw'
-    const timeOut2 = setTimeout(gameOver(), 4000)
+    gameOver()
         return 'Draw';
     }
 }
@@ -108,8 +130,8 @@ reBtn.addEventListener('click', () =>{
 startBtn.addEventListener('click', () =>{
   game = true
   currentPlayer = 'X'
-  display.textContent = 'Player1 is playing first'
   newGame()
+  display.textContent = `${player1.showInfo()} is playing first`
 })
 btn1.addEventListener('click', () =>{
   if(game){
